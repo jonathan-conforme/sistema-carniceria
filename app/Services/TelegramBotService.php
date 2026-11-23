@@ -1280,4 +1280,94 @@ class TelegramBotService
             Http::post("https://api.telegram.org/bot{$token}/sendMessage", $payload);
         }
     }
+    public function verificarChat(string $chat_id): array
+    {
+        $token = config('services.telegram_bot.token');
+
+        if (empty($token)) {
+            return [
+                'ok'    => false,
+                'error' => 'El token del bot (TELEGRAM_BOT_TOKEN) no está configurado en el servidor.',
+            ];
+        }
+
+        try {
+            $respuesta = Http::timeout(6)->get("https://api.telegram.org/bot{$token}/getChat", [
+                'chat_id' => trim($chat_id),
+            ]);
+
+            if ($respuesta->successful() && ($respuesta->json('ok') === true)) {
+                $resultado = $respuesta->json('result', []);
+                $nombre = trim(($resultado['first_name'] ?? '') . ' ' . ($resultado['last_name'] ?? ''));
+                $username = ! empty($resultado['username']) ? " (@{$resultado['username']})" : '';
+
+                return [
+                    'ok'     => true,
+                    'perfil' => ($nombre ?: 'Usuario') . $username,
+                ];
+            }
+
+            return [
+                'ok'    => false,
+                'error' => 'Telegram no reconoce este ID. Revisa que el número esté bien escrito y que el usuario haya presionado /start en el bot.',
+            ];
+        } catch (Throwable) {
+            return [
+                'ok'    => false,
+                'error' => 'No se pudo conectar con Telegram para validar el ID. Intenta de nuevo en unos segundos.',
+            ];
+        }
+    }
+
+    public function enviarPruebaConexion(User $usuario): array
+    {
+        if (empty($usuario->telegram_chat_id)) {
+            return [
+                'ok'    => false,
+                'error' => "{$usuario->name} no tiene un ID de Telegram guardado.",
+            ];
+        }
+
+        $token = config('services.telegram_bot.token');
+        if (empty($token)) {
+            return [
+                'ok'    => false,
+                'error' => 'Falta configurar TELEGRAM_BOT_TOKEN en el servidor.',
+            ];
+        }
+
+        try {
+            $respuesta = Http::timeout(6)->post("https://api.telegram.org/bot{$token}/sendMessage", [
+                'chat_id'    => $usuario->telegram_chat_id,
+                'text'       => "✅ *Conexión verificada*\nHola *{$usuario->name}*, tu cuenta ({$usuario->rol}) ya está vinculada al sistema de la carnicería. Envía /menu para operar.",
+                'parse_mode' => 'Markdown',
+            ]);
+
+            if ($respuesta->successful() && ($respuesta->json('ok') === true)) {
+                $chat = $respuesta->json('result.chat', []);
+                $nombreTg = trim(($chat['first_name'] ?? '') . ' ' . ($chat['last_name'] ?? ''));
+                $username = ! empty($chat['username']) ? " (@{$chat['username']})" : '';
+
+                return [
+                    'ok'      => true,
+                    'mensaje' => "Mensaje enviado a {$usuario->name} — Telegram: " . ($nombreTg ?: 'Activo') . $username,
+                ];
+            }
+
+            $descripcion = (string) $respuesta->json('description', '');
+            $motivo = str_contains(mb_strtolower($descripcion), 'blocked')
+                ? "El usuario {$usuario->name} bloqueó el bot en su Telegram."
+                : "No se pudo entregar el mensaje a {$usuario->name}. Verifica que el ID sea correcto y haya enviado /start al bot.";
+
+            return [
+                'ok'    => false,
+                'error' => $motivo,
+            ];
+        } catch (Throwable) {
+            return [
+                'ok'    => false,
+                'error' => 'Error de red al intentar contactar con Telegram.',
+            ];
+        }
+    }
 }

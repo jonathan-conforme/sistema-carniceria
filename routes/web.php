@@ -1,12 +1,13 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FiadoController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\PosController;
-use App\Http\Controllers\VentaController;
-use App\Http\Controllers\DashboardController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\VentaController;
+use App\Http\Controllers\UsuarioController;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -29,7 +30,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pos/ventas', [PosController::class, 'store'])->name('pos.ventas.store');
 
     Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
-Route::get('/reportes/exportar', [ReporteController::class, 'exportarCsv'])->name('reportes.exportar');
+    Route::get('/reportes/exportar', [ReporteController::class, 'exportarCsv'])->name('reportes.exportar');
+
+    Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+    Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
+    Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.update');
+    Route::post('/usuarios/{usuario}/probar-telegram', [UsuarioController::class, 'probarTelegram'])->name('usuarios.probar-telegram');
 });
 
 require __DIR__.'/settings.php';

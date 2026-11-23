@@ -34,6 +34,11 @@ const mainNavItems: NavItem[] = [
         url: '/reportes',
         icon: BarChart3,
     },
+     {
+        title: 'Usuarios',
+        url: '/usuarios',
+        icon: BarChart3,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
