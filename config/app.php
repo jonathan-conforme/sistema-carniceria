@@ -122,5 +122,11 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+    'admin' => [
+        'name'        => env('ADMIN_NAME'),
+        'email'       => env('ADMIN_EMAIL'),
+        'password'    => env('ADMIN_PASSWORD'),
+        'telegram_id' => env('ADMIN_TELEGRAM_ID'),
+    ],
 
 ];
