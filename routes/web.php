@@ -14,8 +14,6 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    Route::redirect('/dashboard', '/pos')->name('dashboard');
-
     Route::get('/ventas', [FiadoController::class, 'index'])->name('ventas.index');
     Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
     Route::post('/ventas/abonos', [VentaController::class, 'registrarAbono'])->name('ventas.abonos.store');
