@@ -147,12 +147,17 @@ const Sidebar = React.forwardRef<
         variant?: 'sidebar' | 'floating' | 'inset';
         collapsible?: 'offcanvas' | 'icon' | 'none';
     }
->(({ side = 'left', variant = 'sidebar', collapsible = 'offcanvas', className, children, ...props }, ref) => {
+>(({ side = 'left', variant = 'sidebar', collapsible = 'offcanvas', className, style, children, ...props }, ref) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
     if (collapsible === 'none') {
         return (
-            <div className={cn('flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground', className)} ref={ref} {...props}>
+            <div
+                className={cn('flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground', className)}
+                style={style}
+                ref={ref}
+                {...props}
+            >
                 {children}
             </div>
         );
@@ -164,21 +169,21 @@ const Sidebar = React.forwardRef<
                 <SheetContent
                     data-sidebar="sidebar"
                     data-mobile="true"
-                    className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+                    className="w-(--sidebar-width) bg-[#34222E] p-0 text-[#FEE9D6] [&>button]:hidden"
                     style={
                         {
                             '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
+                            ...style,
                         } as React.CSSProperties
                     }
                     side={side}
                 >
-                    <SheetTitle className="sr-only">Sidebar Navigation</SheetTitle>
-                    <div className="flex h-full w-full flex-col">{children}</div>
+                    <SheetTitle className="sr-only">Navegación principal</SheetTitle>
+                    <div className="flex h-full w-full flex-col bg-[#34222E] text-[#FEE9D6]">{children}</div>
                 </SheetContent>
             </Sheet>
         );
     }
-
     return (
         <div
             ref={ref}

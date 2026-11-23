@@ -78,6 +78,7 @@
 
 :root {
     --sidebar: #34222E;
+    --sidebar-background: #34222E;
     --sidebar-foreground: #FEE9D6;
     --sidebar-primary: #E2424A;
     --sidebar-primary-foreground: #FFFFFF;
@@ -110,7 +111,7 @@
     --chart-4: hsl(43, 74%, 66%);
     --chart-5: hsl(27, 87%, 67%);
     --radius: 0.5rem;
-    
+
 }
 
 .dark {
